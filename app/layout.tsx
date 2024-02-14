@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import ModalProvider from "@/provider/modal-provider";
 import { Toaster } from "sonner";
+import QueryProvider from "@/provider/query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,7 +30,7 @@ export default function RootLayout({
             disableTransitionOnChange
             storageKey="collector-theme"
           >
-            {children}
+            <QueryProvider>{children}</QueryProvider>
             <Toaster />
             <ModalProvider />
           </ThemeProvider>

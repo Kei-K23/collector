@@ -19,7 +19,7 @@ const CreateForm = () => {
       >
         <PlusIcon className="w-20 h-20 " />
       </Card>
-      <p className="mt-2">Crate form</p>
+      <p className="mt-2">Crate blank form</p>
     </div>
   );
 };

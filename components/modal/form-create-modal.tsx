@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { useModalStore } from "@/store/modal-store";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   title: z.string().min(1),
@@ -33,6 +34,7 @@ const formSchema = z.object({
 export function CreateFormModal() {
   const { user } = useUser();
   const { isOpen, modalType, onClose } = useModalStore();
+  const queryClient = useQueryClient();
 
   const open = isOpen && modalType === "createForm";
 
@@ -65,6 +67,7 @@ export function CreateFormModal() {
     const data = await res.json();
 
     if (data.success && data.status === 201) {
+      queryClient.invalidateQueries({ queryKey: ["forms", user?.id] });
       onClose();
       toast.success("Form created successfully");
     } else {
