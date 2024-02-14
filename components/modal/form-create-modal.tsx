@@ -22,6 +22,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useModalStore } from "@/store/modal-store";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   title: z.string().min(1),
@@ -29,6 +31,7 @@ const formSchema = z.object({
 });
 
 export function CreateFormModal() {
+  const { user } = useUser();
   const { isOpen, modalType, onClose } = useModalStore();
 
   const open = isOpen && modalType === "createForm";
@@ -41,8 +44,32 @@ export function CreateFormModal() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) {
+      return;
+    }
+
+    const res = await fetch("http://localhost:3300/api/forms", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        title: values.title,
+        description: values.description,
+        externalUserId: user.id,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success && data.status === 201) {
+      onClose();
+      toast.success("Form created successfully");
+    } else {
+      toast.error("Something went wrong!");
+    }
   }
 
   return (
