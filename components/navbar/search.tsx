@@ -5,10 +5,10 @@ import { SearchIcon } from "lucide-react";
 
 const Search = () => {
   return (
-    <form className="border flex items-center">
+    <form className="rounded-md border-[1.5px] bg-white dark:bg-black flex items-center">
       <Input
-        className="ring-0 outline-none border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-        placeholder="Search..."
+        className="bg-transparent ring-0 outline-none border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        placeholder="Search"
       />
       <Button size={"sm"} variant={"ghost"} className="rounded-full">
         <SearchIcon className="w-5 h-5" />
