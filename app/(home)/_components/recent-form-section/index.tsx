@@ -8,7 +8,7 @@ import type { FormData } from "@/type";
 const RecentFormSection = () => {
   const { user } = useUser();
 
-  const { isPending, error, data } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ["forms", user?.id],
     queryFn: () =>
       fetch(`http://localhost:3300/api/forms/${user?.id}`).then((res) =>
@@ -16,6 +16,7 @@ const RecentFormSection = () => {
       ),
   });
 
+  // TODO:: Add loading indicator
   if (isPending) {
     return <div>Loading...</div>;
   }
@@ -23,7 +24,7 @@ const RecentFormSection = () => {
   return (
     <section className="my-8 h-full ">
       <h2 className="text-lg mb-7">Recently created forms</h2>
-      <div className="grid grid-cols-4">
+      <div className="grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-y-5 gap-x-8">
         {data?.data?.map((form: FormData) => (
           <RecentForm
             key={form.id}

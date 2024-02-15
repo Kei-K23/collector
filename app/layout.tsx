@@ -30,9 +30,11 @@ export default function RootLayout({
             disableTransitionOnChange
             storageKey="collector-theme"
           >
-            <QueryProvider>{children}</QueryProvider>
+            <QueryProvider>
+              {children}
+              <ModalProvider />
+            </QueryProvider>
             <Toaster />
-            <ModalProvider />
           </ThemeProvider>
         </body>
       </html>

@@ -14,22 +14,18 @@ interface RecentFormProps {
 
 const RecentForm = ({ title, createdAt, formId }: RecentFormProps) => {
   return (
-    <div>
-      <Card
-        className={cn(
-          " group w-[200px] h-[220px] cursor-pointer flex justify-center items-center transition-all hover:border hover:border-purple-500"
-        )}
-      >
-        <CardContent className="p-2">
-          <div className="w-full flex items-center justify-center">
-            <BookText className="w-8 h-8" />
-          </div>
-          <h3 className="mt-4">{title}</h3>
-          <p className="text-muted-foreground">
-            created: {formatDistanceToNow(new Date(createdAt))}
-          </p>
-        </CardContent>
-      </Card>
+    <div
+      className={cn(
+        "relative bg-background group w-[200px] h-[220px] border-[1.5px] rounded-lg border-slate-300 dark:border-slate-700 cursor-pointer flex flex-col justify-center items-center transition-all hover:border-purple-500 hover:-top-2 hover:-right-2 "
+      )}
+    >
+      <div className="w-full flex items-center justify-center">
+        <BookText className="w-8 h-8" />
+      </div>
+      <h3 className="mt-4">{title}</h3>
+      <p className="text-muted-foreground">
+        created: {formatDistanceToNow(new Date(createdAt))}
+      </p>
     </div>
   );
 };

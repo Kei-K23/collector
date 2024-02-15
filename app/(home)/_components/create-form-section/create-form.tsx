@@ -14,7 +14,7 @@ const CreateForm = () => {
       <Card
         onClick={() => onOpen("createForm")}
         className={cn(
-          "group w-[150px] h-[150px] cursor-pointer flex justify-center items-center transition-all hover:border hover:border-purple-500"
+          "group w-[150px] h-[150px] cursor-pointer border-slate-300 dark:border-slate-700 flex justify-center items-center transition-all hover:border hover:border-purple-500"
         )}
       >
         <PlusIcon className="w-20 h-20 " />
