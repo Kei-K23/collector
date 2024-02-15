@@ -36,6 +36,7 @@ const FormIdPage = ({ params }: FormIdPageProps) => {
   return (
     <div className="mx-auto px-4 md:w-[700px] lg:w-[800px] xl:w-[750px] my-6 space-y-4">
       <FormHeader
+        id={data.data?.id}
         title={data.data?.title}
         description={data.data?.description}
       />

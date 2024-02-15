@@ -9,7 +9,8 @@ export interface FormData {
 
 export interface DetailFormData {
   data: {
+    id: string;
     title: string;
-    description: string;
+    description?: string;
   };
 }

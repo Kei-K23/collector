@@ -1,5 +1,6 @@
 "use client";
 import { CreateFormModal } from "@/components/modal/form-create-modal";
+import { UpdateFormModal } from "@/components/modal/form-update-modal";
 import React, { useEffect, useState } from "react";
 
 const ModalProvider = () => {
@@ -16,6 +17,7 @@ const ModalProvider = () => {
   return (
     <>
       <CreateFormModal />
+      <UpdateFormModal />
     </>
   );
 };
