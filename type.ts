@@ -6,3 +6,10 @@ export interface FormData {
   updatedAt: Date;
   userId: string;
 }
+
+export interface DetailFormData {
+  data: {
+    title: string;
+    description: string;
+  };
+}
