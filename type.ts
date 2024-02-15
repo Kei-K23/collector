@@ -14,3 +14,11 @@ export interface DetailFormData {
     description?: string;
   };
 }
+
+export enum QuestionType {
+  "SHORT_ANSWER" = "SHORT_ANSWER",
+  "PARAGRAPH" = "PARAGRAPH",
+  "MULTIPLE_CHOICE" = "MULTIPLE_CHOICE",
+  "CHECKBOXES" = "CHECKBOXES",
+  "DROPDOWN" = "DROPDOWN",
+}

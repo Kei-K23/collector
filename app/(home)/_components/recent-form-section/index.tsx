@@ -22,7 +22,7 @@ const RecentFormSection = () => {
   }
 
   return (
-    <section className="my-8 h-full ">
+    <section className="my-8 pb-12">
       <h2 className="text-lg mb-7">Recently created forms</h2>
       <div className="grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-y-5 gap-x-8">
         {data?.data?.map((form: FormData) => (
