@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { QuestionArray, QuestionType } from "@/type";
+import { PlusCircle } from "lucide-react";
 
 interface useFormBuilderProps {
   questions: QuestionArray;
@@ -44,7 +45,17 @@ const useFormBuilder = ({
 }: // onQuestionUpdate,
 useFormBuilderProps) => {
   const { user } = useUser();
+  const [editingQuestionOption, setEditingQuestionOption] = useState<number>();
+  const [questionOption, setQuestionOption] = useState<string>("");
+
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [questionOptions, setQuestionOptions] = useState<
+    Array<{
+      option: string;
+      order: number;
+    }>
+  >([]);
+
   const queryClient = useQueryClient();
 
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -142,6 +153,19 @@ useFormBuilderProps) => {
     };
   }, []);
 
+  function incrementQuestionOption(type: QuestionType) {
+    const prevLength = questionOptions.length;
+    setQuestionOptions((prev) => [
+      ...prev,
+      {
+        option: `${type} ${prevLength + 1}`,
+        order: prevLength + 1,
+      },
+    ]);
+  }
+
+  console.log(questionOptions);
+
   return (
     <>
       {questions.map((question, index) => (
@@ -170,15 +194,63 @@ useFormBuilderProps) => {
                   onChange={handleChange}
                 />
 
-                {/* TODO:: Create question option */}
-                {editingQuestion.type === QuestionType["DROPDOWN"] && (
-                  <select id="choices">
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                    <option value="option4">Option 4</option>
-                  </select>
-                )}
+                {editingQuestion.type === QuestionType["DROPDOWN"] &&
+                  questionOptions.length > 0 && (
+                    <>
+                      <ul>
+                        {questionOptions.map((option, index) => {
+                          if (editingQuestionOption === index) {
+                            return (
+                              <Input
+                                key={index}
+                                value={option.option} // Use option.option as value
+                                defaultValue={option.option}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    setEditingQuestionOption(undefined);
+                                    const updatedOptions = questionOptions.map(
+                                      (o, i) =>
+                                        i === index
+                                          ? { ...o, option: option.option } // Use option.option
+                                          : o
+                                    );
+                                    setQuestionOptions(updatedOptions);
+                                  }
+                                }}
+                                onChange={(e) =>
+                                  setQuestionOptions((prevOptions) => {
+                                    const newOptions = [...prevOptions];
+                                    newOptions[index] = {
+                                      ...option,
+                                      option: e.target.value,
+                                    };
+                                    return newOptions;
+                                  })
+                                }
+                              />
+                            );
+                          } else {
+                            return (
+                              <li
+                                key={index}
+                                onClick={() => setEditingQuestionOption(index)}
+                              >
+                                {option.option}
+                              </li>
+                            );
+                          }
+                        })}
+                      </ul>
+                      <Button
+                        type="button"
+                        onClick={() =>
+                          incrementQuestionOption(editingQuestion.type!)
+                        }
+                      >
+                        <PlusCircle className="w-5 h-5" />
+                      </Button>
+                    </>
+                  )}
 
                 <select
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
@@ -204,6 +276,10 @@ useFormBuilderProps) => {
                         type: e.target.value as QuestionType,
                       });
                     } else if (e.target.value === QuestionType["DROPDOWN"]) {
+                      setQuestionOptions((prev) => [
+                        ...prev,
+                        { option: "Dropdown 1", order: 1 },
+                      ]);
                       setEditingQuestion({
                         ...editingQuestion,
                         type: e.target.value as QuestionType,
