@@ -22,13 +22,6 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { QuestionArray, QuestionType } from "@/type";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface useFormBuilderProps {
   questions: QuestionArray;
@@ -169,6 +162,7 @@ useFormBuilderProps) => {
                   name="text"
                   onChange={handleChange}
                 />
+
                 <Input
                   placeholder="e.g. some description"
                   value={editingQuestion.description!}
@@ -176,16 +170,46 @@ useFormBuilderProps) => {
                   onChange={handleChange}
                 />
 
+                {/* TODO:: Create question option */}
+                {editingQuestion.type === QuestionType["DROPDOWN"] && (
+                  <select id="choices">
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                    <option value="option4">Option 4</option>
+                  </select>
+                )}
+
                 <select
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                   name="type"
                   value={editingQuestion.type}
-                  onChange={(e) =>
-                    setEditingQuestion({
-                      ...editingQuestion,
-                      type: e.target.value as QuestionType,
-                    })
-                  }
+                  onChange={(e) => {
+                    if (e.target.value === QuestionType["PARAGRAPH"]) {
+                      setEditingQuestion({
+                        ...editingQuestion,
+                        text: defaultQuestionFormat.paragraphQuestion.text,
+                        description:
+                          defaultQuestionFormat.paragraphQuestion.description,
+                        type: e.target.value as QuestionType,
+                      });
+                    } else if (
+                      e.target.value === QuestionType["SHORT_ANSWER"]
+                    ) {
+                      setEditingQuestion({
+                        ...editingQuestion,
+                        text: defaultQuestionFormat.shortAnswerQuestion.text,
+                        description:
+                          defaultQuestionFormat.shortAnswerQuestion.description,
+                        type: e.target.value as QuestionType,
+                      });
+                    } else if (e.target.value === QuestionType["DROPDOWN"]) {
+                      setEditingQuestion({
+                        ...editingQuestion,
+                        type: e.target.value as QuestionType,
+                      });
+                    }
+                  }}
                 >
                   {[
                     "SHORT_ANSWER",
