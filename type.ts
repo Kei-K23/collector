@@ -7,11 +7,26 @@ export interface FormData {
   userId: string;
 }
 
+export type QuestionArray = Array<
+  Partial<{
+    createdAt: Date;
+    description?: string | null;
+    formId: string;
+    id: string;
+    order: number;
+    questionOption?: [];
+    text: string;
+    type: QuestionType;
+    updatedAt: Date;
+  }>
+>;
+
 export interface DetailFormData {
   data: {
     id: string;
     title: string;
     description?: string;
+    question?: QuestionArray;
   };
 }
 
