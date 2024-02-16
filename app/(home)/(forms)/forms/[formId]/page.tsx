@@ -66,7 +66,7 @@ const FormIdPage = ({ params }: FormIdPageProps) => {
   console.log(questions);
 
   return (
-    <div className="pt-20 mx-auto px-4 md:w-[700px] lg:w-[800px] xl:w-[750px] my-6 space-y-4">
+    <div className="pt-20 pb-16 mx-auto px-4 md:w-[700px] lg:w-[800px] xl:w-[750px] mt-10 mb-16 space-y-4">
       <FormHeader
         id={data.data?.id}
         title={data.data?.title}
