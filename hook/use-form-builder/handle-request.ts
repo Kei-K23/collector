@@ -10,7 +10,10 @@ interface HandleQuestionRequestProps {
   editingQuestion: Question;
   setEditingQuestion: (question: Question | null) => void;
   queryClient: QueryClient;
-  questionOption?: Array<{ option: string }>;
+  questionOption?: Array<{
+    option: string;
+    order: number;
+  }>;
 }
 
 export const handleQuestionRequest = async ({
@@ -41,13 +44,7 @@ export const handleQuestionRequest = async ({
             type: editingQuestion.type,
             order: editingQuestion.order,
             questionOption:
-              questionOption && questionOption.length > 0
-                ? questionOption.map((q) => {
-                    return {
-                      option: q.option,
-                    };
-                  })
-                : [],
+              questionOption && questionOption.length > 0 ? questionOption : [],
           }),
         }
       );

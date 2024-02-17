@@ -7,6 +7,23 @@ export interface FormData {
   userId: string;
 }
 
+export type QuestionOptionArray = Array<{
+  option: string;
+  order: number;
+}>;
+
+export type Question = {
+  createdAt?: Date | undefined;
+  description?: string | null | undefined;
+  formId?: string | undefined;
+  id?: string | undefined;
+  order?: number | undefined;
+  questionOption?: QuestionOptionArray;
+  text?: string | undefined;
+  type?: QuestionType | undefined;
+  updatedAt?: Date | undefined;
+};
+
 export type QuestionArray = Array<
   Partial<{
     createdAt: Date;
@@ -14,7 +31,7 @@ export type QuestionArray = Array<
     formId: string;
     id: string;
     order: number;
-    questionOption?: [];
+    questionOption?: QuestionOptionArray;
     text: string;
     type: QuestionType;
     updatedAt: Date;

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { QuestionArray, QuestionType } from "@/type";
+import { QuestionArray, QuestionOptionArray, QuestionType } from "@/type";
 import CreateAndEditQuestionForm from "./create-and-edit-question-form";
 
 interface useFormBuilderProps {
@@ -27,13 +27,6 @@ const useFormBuilder = ({ questions, formId }: useFormBuilderProps) => {
   >();
 
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
-
-  const [questionOptions, setQuestionOptions] = useState<
-    Array<{
-      option: string;
-      order: number;
-    }>
-  >([]);
 
   const queryClient = useQueryClient();
 
@@ -74,10 +67,8 @@ const useFormBuilder = ({ questions, formId }: useFormBuilderProps) => {
                 userId={user?.id!}
                 formRef={formRef}
                 queryClient={queryClient}
-                questionOptions={questionOptions}
                 setEditingQuestion={setEditingQuestion}
                 setEditingQuestionOption={setEditingQuestionOption}
-                setQuestionOptions={setQuestionOptions}
               />
             </>
           ) : (
@@ -86,6 +77,14 @@ const useFormBuilder = ({ questions, formId }: useFormBuilderProps) => {
               <p className="border-b dark:border-b-slate-800 border-b-slate-300 pb-2">
                 {question.description}
               </p>
+              {question?.questionOption &&
+                question.questionOption.length > 0 && (
+                  <ul>
+                    {question.questionOption.map((option) => (
+                      <li key={option.order}>{option.option}</li>
+                    ))}
+                  </ul>
+                )}
               <Button onClick={() => handleEditQuestion(question)}>Edit</Button>
             </>
           )}

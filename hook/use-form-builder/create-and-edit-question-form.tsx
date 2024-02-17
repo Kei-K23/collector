@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { handleQuestionRequest } from "./handle-request";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { Question } from ".";
+
 import { QueryClient } from "@tanstack/react-query";
-import { QuestionType } from "@/type";
+import { Question, QuestionOptionArray, QuestionType } from "@/type";
 
 export const defaultQuestionFormat = {
   shortAnswerQuestion: {
@@ -33,16 +33,6 @@ interface CreateAndEditQuestionFormProps {
   setEditingQuestion: (question: Question | null) => void;
   queryClient: QueryClient;
   formRef: React.MutableRefObject<HTMLFormElement | null>;
-  questionOptions: Array<{
-    option: string;
-    order: number;
-  }>;
-  setQuestionOptions: (
-    questionOptions: Array<{
-      option: string;
-      order: number;
-    }>
-  ) => void;
 }
 
 const CreateAndEditQuestionForm = ({
@@ -52,11 +42,13 @@ const CreateAndEditQuestionForm = ({
   setEditingQuestion,
   queryClient,
   formRef,
-  questionOptions,
-  setQuestionOptions,
+
   setEditingQuestionOption,
   editingQuestionOption,
 }: CreateAndEditQuestionFormProps) => {
+  const [questionOptions, setQuestionOptions] = useState<QuestionOptionArray>(
+    editingQuestion.questionOption ?? []
+  );
   // form input onchange handler
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -188,10 +180,6 @@ const CreateAndEditQuestionForm = ({
             });
             setQuestionOptions([]);
           } else if (e.target.value === QuestionType["DROPDOWN"]) {
-            // setQuestionOptions((prev) => [
-            //   ...prev,
-            //   { option: "Dropdown 1", order: 1 },
-            // ]);
             setQuestionOptions([
               ...questionOptions,
               { option: "Dropdown 1", order: 1 },
