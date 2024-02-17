@@ -70,17 +70,19 @@ const CreateAndEditQuestionForm = ({
         onChange={handleChange}
       />
 
-      {editingQuestion.type === QuestionType["DROPDOWN"] &&
-        questionOptions.length > 0 && (
-          <>
-            <EditQuestionOption
-              questionOptions={questionOptions}
-              editingQuestionOption={editingQuestionOption}
-              setEditingQuestionOption={setEditingQuestionOption}
-              setQuestionOptions={setQuestionOptions}
-            />
-          </>
-        )}
+      {(editingQuestion.type === QuestionType["DROPDOWN"] ||
+        editingQuestion.type === QuestionType["CHECKBOXES"] ||
+        editingQuestion.type === QuestionType["MULTIPLE_CHOICE"]) && (
+        <>
+          <EditQuestionOption
+            type={editingQuestion.type}
+            questionOptions={questionOptions}
+            editingQuestionOption={editingQuestionOption}
+            setEditingQuestionOption={setEditingQuestionOption}
+            setQuestionOptions={setQuestionOptions}
+          />
+        </>
+      )}
 
       <SelectQuestionType
         setQuestionOptions={setQuestionOptions}

@@ -74,6 +74,10 @@ export const handleQuestionRequest = async ({
               description: editingQuestion.description,
               type: editingQuestion.type,
               order: editingQuestion.order,
+              questionOption:
+                questionOption && questionOption.length > 0
+                  ? questionOption
+                  : [],
             },
           ],
         }),

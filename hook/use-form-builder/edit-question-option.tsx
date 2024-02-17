@@ -1,14 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Question, QuestionOptionArray } from "@/type";
-import { PlusCircle } from "lucide-react";
-import React, { useState } from "react";
+import { Question, QuestionOptionArray, QuestionType } from "@/type";
+import { Circle, PlusCircle, Square } from "lucide-react";
+import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 
+type Option = {
+  option: string;
+  order: number;
+};
 interface EditQuestionOptionProps {
   setEditingQuestionOption: (editingQuestionOption: number | undefined) => void;
   setQuestionOptions: React.Dispatch<React.SetStateAction<QuestionOptionArray>>;
   editingQuestionOption: number;
   questionOptions: QuestionOptionArray;
+  type: QuestionType;
 }
 
 const EditQuestionOption = ({
@@ -16,6 +21,7 @@ const EditQuestionOption = ({
   editingQuestionOption,
   setQuestionOptions,
   questionOptions,
+  type,
 }: EditQuestionOptionProps) => {
   // add question option
   function incrementQuestionOption() {
@@ -28,9 +34,37 @@ const EditQuestionOption = ({
       },
     ]);
   }
+
+  // when enter key is pressed, edit question option
+  function onKeyDown(event: KeyboardEvent, index: number, option: Option) {
+    if (event.key === "Enter") {
+      setEditingQuestionOption(undefined);
+      const updatedOptions = questionOptions.map((o, i) =>
+        i === index ? { ...o, option: option.option } : o
+      );
+      setQuestionOptions(updatedOptions);
+    }
+  }
+
+  // on change
+  function onChange(
+    e: ChangeEvent<HTMLInputElement>,
+    index: number,
+    option: Option
+  ) {
+    setQuestionOptions((prevOptions: { option: string; order: number }[]) => {
+      const newOptions = [...prevOptions];
+      newOptions[index] = {
+        ...option,
+        option: e.target.value,
+      };
+      return newOptions;
+    });
+  }
+
   return (
     <>
-      <ul>
+      <ul className="space-y-2">
         {questionOptions.map((option, index) => {
           if (editingQuestionOption === index) {
             return (
@@ -38,35 +72,43 @@ const EditQuestionOption = ({
                 key={index}
                 value={option.option}
                 defaultValue={option.option}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    setEditingQuestionOption(undefined);
-                    const updatedOptions = questionOptions.map((o, i) =>
-                      i === index ? { ...o, option: option.option } : o
-                    );
-                    setQuestionOptions(updatedOptions);
-                  }
-                }}
-                onChange={(e) =>
-                  setQuestionOptions(
-                    (prevOptions: { option: string; order: number }[]) => {
-                      const newOptions = [...prevOptions];
-                      newOptions[index] = {
-                        ...option,
-                        option: e.target.value,
-                      };
-                      return newOptions;
-                    }
-                  )
-                }
+                onKeyDown={(e) => onKeyDown(e, index, option)}
+                onChange={(e) => onChange(e, index, option)}
               />
             );
           } else {
-            return (
-              <li key={index} onClick={() => setEditingQuestionOption(index)}>
-                {option.option}
-              </li>
-            );
+            if (type === QuestionType["DROPDOWN"]) {
+              return (
+                <li
+                  key={option.order}
+                  onClick={() => setEditingQuestionOption(index)}
+                >
+                  {`${index + 1}.`} {option.option}
+                </li>
+              );
+            } else if (type === QuestionType["CHECKBOXES"]) {
+              return (
+                <li
+                  key={option.order}
+                  className="flex items-center gap-2"
+                  onClick={() => setEditingQuestionOption(index)}
+                >
+                  <Square className="w-4 h-4 text-muted-foreground" />{" "}
+                  {option.option}
+                </li>
+              );
+            } else if (type === QuestionType["MULTIPLE_CHOICE"]) {
+              return (
+                <li
+                  key={option.order}
+                  className="flex items-center gap-2"
+                  onClick={() => setEditingQuestionOption(index)}
+                >
+                  <Circle className="w-4 h-4 text-muted-foreground" />{" "}
+                  {option.option}
+                </li>
+              );
+            }
           }
         })}
       </ul>
