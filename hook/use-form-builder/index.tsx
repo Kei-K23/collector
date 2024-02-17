@@ -21,14 +21,13 @@ export interface Question {
 
 const useFormBuilder = ({ questions, formId }: useFormBuilderProps) => {
   const { user } = useUser();
+  const queryClient = useQueryClient();
 
   const [editingQuestionOption, setEditingQuestionOption] = useState<
     number | null
   >();
 
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
-
-  const queryClient = useQueryClient();
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -69,6 +68,7 @@ const useFormBuilder = ({ questions, formId }: useFormBuilderProps) => {
           ) : (
             <>
               <DisplayQuestion
+                formId={formId}
                 question={question}
                 setEditingQuestion={setEditingQuestion}
               />

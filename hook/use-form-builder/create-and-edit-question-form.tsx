@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { QueryClient } from "@tanstack/react-query";
 import { Question, QuestionOptionArray, QuestionType } from "@/type";
 import EditQuestionOption from "./edit-question-option";
-import { defaultQuestionFormat } from "./default-form";
 import SelectQuestionType from "./select-question-type";
 
 interface CreateAndEditQuestionFormProps {

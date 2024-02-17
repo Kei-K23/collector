@@ -1,8 +1,7 @@
 import { FormEvent } from "react";
-import { Question } from ".";
 import { toast } from "sonner";
 import { QueryClient } from "@tanstack/react-query";
-import { QuestionArray } from "@/type";
+import { Question, QuestionArray } from "@/type";
 
 interface HandleQuestionRequestProps {
   e: FormEvent;
@@ -26,73 +25,57 @@ export const handleQuestionRequest = async ({
   e.preventDefault();
   if (!userId || !editingQuestion) return;
 
-  try {
-    if (editingQuestion.id) {
-      console.log(questionOption);
+  const endpoint = editingQuestion.id
+    ? `http://localhost:3300/api/questions/${editingQuestion.id}/${formId}`
+    : "http://localhost:3300/api/questions";
 
-      const res = await fetch(
-        `http://localhost:3300/api/questions/${editingQuestion.id}/${formId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
+  const method = editingQuestion.id ? "PUT" : "POST";
+  const successMessage = editingQuestion.id
+    ? "Updated question successfully"
+    : "Added question successfully";
+
+  const bodyData = editingQuestion.id
+    ? JSON.stringify({
+        text: editingQuestion.text,
+        description: editingQuestion.description,
+        type: editingQuestion.type,
+        order: editingQuestion.order,
+        questionOption:
+          questionOption && questionOption.length > 0 ? questionOption : [],
+      })
+    : JSON.stringify({
+        data: [
+          {
+            formId: editingQuestion.formId,
             text: editingQuestion.text,
             description: editingQuestion.description,
             type: editingQuestion.type,
             order: editingQuestion.order,
             questionOption:
               questionOption && questionOption.length > 0 ? questionOption : [],
-          }),
-        }
-      );
-
-      const data = await res.json();
-      if (data.success && data.status === 200) {
-        queryClient.invalidateQueries({
-          queryKey: ["forms", userId, formId],
-        });
-        setEditingQuestion(null);
-        toast.success("Updated question successfully");
-      } else {
-        toast.error("Something went wrong!");
-      }
-    } else {
-      const res = await fetch(`http://localhost:3300/api/questions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          data: [
-            {
-              formId: editingQuestion.formId,
-              text: editingQuestion.text,
-              description: editingQuestion.description,
-              type: editingQuestion.type,
-              order: editingQuestion.order,
-              questionOption:
-                questionOption && questionOption.length > 0
-                  ? questionOption
-                  : [],
-            },
-          ],
-        }),
+          },
+        ],
       });
 
-      const data = await res.json();
-      if (data.success && data.status === 201) {
-        queryClient.invalidateQueries({
-          queryKey: ["forms", userId, formId],
-        });
-        setEditingQuestion(null);
-        toast.success("Added question successfully");
-      } else {
-        toast.error("Something went wrong!");
-      }
+  try {
+    const res = await fetch(endpoint, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: bodyData,
+    });
+
+    const data = await res.json();
+    if (data.success && data.status === (editingQuestion.id ? 200 : 201)) {
+      queryClient.invalidateQueries({
+        queryKey: ["forms", userId, formId],
+      });
+      setEditingQuestion(null);
+      toast.success(successMessage);
+    } else {
+      toast.error("Something went wrong!");
     }
   } catch (error) {
     toast.error("An error occurred while saving the question.");
