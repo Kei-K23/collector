@@ -79,10 +79,16 @@ const useFormBuilder = ({ questions, formId }: useFormBuilderProps) => {
               </p>
               {question?.questionOption &&
                 question.questionOption.length > 0 && (
-                  <ul>
-                    {question.questionOption.map((option) => (
-                      <li key={option.order}>{option.option}</li>
-                    ))}
+                  <ul className="space-y-2">
+                    {question.questionOption.map((option, index) => {
+                      if (question.type === QuestionType["DROPDOWN"]) {
+                        return (
+                          <li key={option.order}>
+                            {`${index + 1}.`} {option.option}
+                          </li>
+                        );
+                      }
+                    })}
                   </ul>
                 )}
               <Button onClick={() => handleEditQuestion(question)}>Edit</Button>

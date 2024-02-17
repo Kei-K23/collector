@@ -30,6 +30,8 @@ export const handleQuestionRequest = async ({
 
   try {
     if (editingQuestion.id) {
+      console.log(questionOption);
+
       const res = await fetch(
         `http://localhost:3300/api/questions/${editingQuestion.id}/${formId}`,
         {

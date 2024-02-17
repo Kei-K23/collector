@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { handleQuestionRequest } from "./handle-request";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-
 import { QueryClient } from "@tanstack/react-query";
 import { Question, QuestionOptionArray, QuestionType } from "@/type";
 
@@ -21,6 +20,10 @@ export const defaultQuestionFormat = {
     type: QuestionType["PARAGRAPH"],
     formId: "",
     order: 0,
+  },
+  dropdownQuestion: {
+    text: "Untitled Question",
+    description: "dropdown text",
   },
 };
 
@@ -57,16 +60,17 @@ const CreateAndEditQuestionForm = ({
   };
 
   // add question option
-  function incrementQuestionOption(type: QuestionType) {
+  function incrementQuestionOption() {
     const prevLength = questionOptions.length;
     setQuestionOptions([
       ...questionOptions,
       {
-        option: `${type} ${prevLength + 1}`,
+        option: `Option ${prevLength + 1}`,
         order: prevLength + 1,
       },
     ]);
   }
+  console.log(questionOptions);
 
   return (
     <form
@@ -148,10 +152,7 @@ const CreateAndEditQuestionForm = ({
                 }
               })}
             </ul>
-            <Button
-              type="button"
-              onClick={() => incrementQuestionOption(editingQuestion.type!)}
-            >
+            <Button type="button" onClick={() => incrementQuestionOption()}>
               <PlusCircle className="w-5 h-5" />
             </Button>
           </>
@@ -182,11 +183,13 @@ const CreateAndEditQuestionForm = ({
           } else if (e.target.value === QuestionType["DROPDOWN"]) {
             setQuestionOptions([
               ...questionOptions,
-              { option: "Dropdown 1", order: 1 },
+              { option: "Option 1", order: 1 },
             ]);
 
             setEditingQuestion({
               ...editingQuestion,
+              text: defaultQuestionFormat.dropdownQuestion.text,
+              description: defaultQuestionFormat.dropdownQuestion.description,
               type: e.target.value as QuestionType,
             });
           }
