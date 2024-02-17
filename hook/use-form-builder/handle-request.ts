@@ -2,6 +2,7 @@ import { FormEvent } from "react";
 import { Question } from ".";
 import { toast } from "sonner";
 import { QueryClient } from "@tanstack/react-query";
+import { QuestionArray } from "@/type";
 
 interface HandleQuestionRequestProps {
   e: FormEvent;
@@ -10,10 +11,7 @@ interface HandleQuestionRequestProps {
   editingQuestion: Question;
   setEditingQuestion: (question: Question | null) => void;
   queryClient: QueryClient;
-  questionOption?: Array<{
-    option: string;
-    order: number;
-  }>;
+  questionOption?: QuestionArray;
 }
 
 export const handleQuestionRequest = async ({
@@ -93,7 +91,6 @@ export const handleQuestionRequest = async ({
       }
     }
   } catch (error) {
-    console.error("Error:", error);
     toast.error("An error occurred while saving the question.");
   }
 };

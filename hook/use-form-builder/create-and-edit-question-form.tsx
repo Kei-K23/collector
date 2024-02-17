@@ -2,30 +2,11 @@ import React, { useState } from "react";
 import { handleQuestionRequest } from "./handle-request";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
 import { QueryClient } from "@tanstack/react-query";
 import { Question, QuestionOptionArray, QuestionType } from "@/type";
-
-export const defaultQuestionFormat = {
-  shortAnswerQuestion: {
-    text: "Untitled Question",
-    description: "short answer text",
-    type: QuestionType["SHORT_ANSWER"],
-    formId: "",
-    order: 0,
-  },
-  paragraphQuestion: {
-    text: "Untitled Question",
-    description: "long answer text",
-    type: QuestionType["PARAGRAPH"],
-    formId: "",
-    order: 0,
-  },
-  dropdownQuestion: {
-    text: "Untitled Question",
-    description: "dropdown text",
-  },
-};
+import EditQuestionOption from "./edit-question-option";
+import { defaultQuestionFormat } from "./default-form";
+import SelectQuestionType from "./select-question-type";
 
 interface CreateAndEditQuestionFormProps {
   userId: string;
@@ -45,32 +26,19 @@ const CreateAndEditQuestionForm = ({
   setEditingQuestion,
   queryClient,
   formRef,
-
   setEditingQuestionOption,
   editingQuestionOption,
 }: CreateAndEditQuestionFormProps) => {
   const [questionOptions, setQuestionOptions] = useState<QuestionOptionArray>(
     editingQuestion.questionOption ?? []
   );
+
   // form input onchange handler
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (!editingQuestion) return;
     setEditingQuestion({ ...editingQuestion, [name]: value });
   };
-
-  // add question option
-  function incrementQuestionOption() {
-    const prevLength = questionOptions.length;
-    setQuestionOptions([
-      ...questionOptions,
-      {
-        option: `Option ${prevLength + 1}`,
-        order: prevLength + 1,
-      },
-    ]);
-  }
-  console.log(questionOptions);
 
   return (
     <form
@@ -105,109 +73,20 @@ const CreateAndEditQuestionForm = ({
       {editingQuestion.type === QuestionType["DROPDOWN"] &&
         questionOptions.length > 0 && (
           <>
-            <ul>
-              {questionOptions.map((option, index) => {
-                if (editingQuestionOption === index) {
-                  return (
-                    <Input
-                      key={index}
-                      value={option.option} // Use option.option as value
-                      defaultValue={option.option}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          setEditingQuestionOption(undefined);
-                          const updatedOptions = questionOptions.map((o, i) =>
-                            i === index
-                              ? { ...o, option: option.option } // Use option.option
-                              : o
-                          );
-                          setQuestionOptions(updatedOptions);
-                        }
-                      }}
-                      onChange={(e) =>
-                        setQuestionOptions(
-                          (
-                            prevOptions: { option: string; order: number }[]
-                          ) => {
-                            const newOptions = [...prevOptions];
-                            newOptions[index] = {
-                              ...option,
-                              option: e.target.value,
-                            };
-                            return newOptions;
-                          }
-                        )
-                      }
-                    />
-                  );
-                } else {
-                  return (
-                    <li
-                      key={index}
-                      onClick={() => setEditingQuestionOption(index)}
-                    >
-                      {option.option}
-                    </li>
-                  );
-                }
-              })}
-            </ul>
-            <Button type="button" onClick={() => incrementQuestionOption()}>
-              <PlusCircle className="w-5 h-5" />
-            </Button>
+            <EditQuestionOption
+              questionOptions={questionOptions}
+              editingQuestionOption={editingQuestionOption}
+              setEditingQuestionOption={setEditingQuestionOption}
+              setQuestionOptions={setQuestionOptions}
+            />
           </>
         )}
 
-      <select
-        className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-        name="type"
-        value={editingQuestion.type}
-        onChange={(e) => {
-          if (e.target.value === QuestionType["PARAGRAPH"]) {
-            setEditingQuestion({
-              ...editingQuestion,
-              text: defaultQuestionFormat.paragraphQuestion.text,
-              description: defaultQuestionFormat.paragraphQuestion.description,
-              type: e.target.value as QuestionType,
-            });
-            setQuestionOptions([]);
-          } else if (e.target.value === QuestionType["SHORT_ANSWER"]) {
-            setEditingQuestion({
-              ...editingQuestion,
-              text: defaultQuestionFormat.shortAnswerQuestion.text,
-              description:
-                defaultQuestionFormat.shortAnswerQuestion.description,
-              type: e.target.value as QuestionType,
-            });
-            setQuestionOptions([]);
-          } else if (e.target.value === QuestionType["DROPDOWN"]) {
-            setQuestionOptions([
-              ...questionOptions,
-              { option: "Option 1", order: 1 },
-            ]);
-
-            setEditingQuestion({
-              ...editingQuestion,
-              text: defaultQuestionFormat.dropdownQuestion.text,
-              description: defaultQuestionFormat.dropdownQuestion.description,
-              type: e.target.value as QuestionType,
-            });
-          }
-        }}
-      >
-        {[
-          "SHORT_ANSWER",
-          "PARAGRAPH",
-          "MULTIPLE_CHOICE",
-          "CHECKBOXES",
-          "DROPDOWN",
-        ].map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </select>
-
+      <SelectQuestionType
+        setQuestionOptions={setQuestionOptions}
+        setEditingQuestion={setEditingQuestion}
+        editingQuestion={editingQuestion}
+      />
       <Button type="submit">Save</Button>
     </form>
   );

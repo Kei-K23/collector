@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { QuestionArray, QuestionOptionArray, QuestionType } from "@/type";
+import { QuestionArray, QuestionType } from "@/type";
 import CreateAndEditQuestionForm from "./create-and-edit-question-form";
+import DisplayQuestion from "./display-question";
 
 interface useFormBuilderProps {
   questions: QuestionArray;
@@ -31,11 +31,6 @@ const useFormBuilder = ({ questions, formId }: useFormBuilderProps) => {
   const queryClient = useQueryClient();
 
   const formRef = useRef<HTMLFormElement | null>(null);
-
-  // handle question editing
-  const handleEditQuestion = (question: Question) => {
-    setEditingQuestion({ ...question });
-  };
 
   // effect for click outside of question when editing the question
   useEffect(() => {
@@ -73,25 +68,10 @@ const useFormBuilder = ({ questions, formId }: useFormBuilderProps) => {
             </>
           ) : (
             <>
-              <p className="text-lg">{question.text}</p>
-              <p className="border-b dark:border-b-slate-800 border-b-slate-300 pb-2">
-                {question.description}
-              </p>
-              {question?.questionOption &&
-                question.questionOption.length > 0 && (
-                  <ul className="space-y-2">
-                    {question.questionOption.map((option, index) => {
-                      if (question.type === QuestionType["DROPDOWN"]) {
-                        return (
-                          <li key={option.order}>
-                            {`${index + 1}.`} {option.option}
-                          </li>
-                        );
-                      }
-                    })}
-                  </ul>
-                )}
-              <Button onClick={() => handleEditQuestion(question)}>Edit</Button>
+              <DisplayQuestion
+                question={question}
+                setEditingQuestion={setEditingQuestion}
+              />
             </>
           )}
         </div>

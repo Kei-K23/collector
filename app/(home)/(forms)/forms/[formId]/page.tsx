@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import FormHeader from "./_components/form-header";
 import { PlusCircle } from "lucide-react";
-import { defaultQuestionFormat } from "@/hook/use-form-builder/create-and-edit-question-form";
+import { defaultQuestionFormat } from "@/hook/use-form-builder/default-form";
 import useFormBuilder from "@/hook/use-form-builder";
 
 interface FormIdPageProps {
