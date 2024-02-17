@@ -23,7 +23,12 @@ const DisplayQuestion = ({
 
   return (
     <>
-      <p className="text-lg">{question.text}</p>
+      <div className="flex items-center gap-2">
+        <p className="text-lg">{question.text}</p>
+        <span className="text-muted-foreground">
+          {!question?.id && "(unsaved)"}
+        </span>
+      </div>
       <p className="border-b dark:border-b-slate-800 border-b-slate-300 pb-2">
         {question.description}
       </p>

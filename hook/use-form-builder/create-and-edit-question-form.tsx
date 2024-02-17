@@ -55,13 +55,20 @@ const CreateAndEditQuestionForm = ({
       ref={formRef}
       className="space-y-8"
     >
-      <Input
-        placeholder="e.g. multi selection"
-        value={editingQuestion.text}
-        name="text"
-        onChange={handleChange}
-      />
-
+      <div className="flex items-center">
+        <Input
+          placeholder="e.g. multi selection"
+          value={editingQuestion.text}
+          name="text"
+          className="flex-1"
+          onChange={handleChange}
+        />
+        <SelectQuestionType
+          setQuestionOptions={setQuestionOptions}
+          setEditingQuestion={setEditingQuestion}
+          editingQuestion={editingQuestion}
+        />
+      </div>
       <Input
         placeholder="e.g. some description"
         value={editingQuestion.description!}
@@ -74,6 +81,7 @@ const CreateAndEditQuestionForm = ({
         editingQuestion.type === QuestionType["MULTIPLE_CHOICE"]) && (
         <>
           <EditQuestionOption
+            question={editingQuestion}
             type={editingQuestion.type}
             questionOptions={questionOptions}
             editingQuestionOption={editingQuestionOption}
@@ -83,11 +91,6 @@ const CreateAndEditQuestionForm = ({
         </>
       )}
 
-      <SelectQuestionType
-        setQuestionOptions={setQuestionOptions}
-        setEditingQuestion={setEditingQuestion}
-        editingQuestion={editingQuestion}
-      />
       <Button type="submit">Save</Button>
     </form>
   );

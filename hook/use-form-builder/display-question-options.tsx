@@ -17,7 +17,6 @@ const DisplayQuestionOptions = ({
 
   if (questionOption?.length === 0) return null;
 
-  //TODO:: Change icon base on question option type
   return (
     <ul className="space-y-2">
       {questionOption.map((option, index) => {

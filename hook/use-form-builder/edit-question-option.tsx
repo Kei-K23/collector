@@ -1,14 +1,16 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Question, QuestionOptionArray, QuestionType } from "@/type";
 import { Circle, PlusCircle, Square } from "lucide-react";
-import React, { ChangeEvent, KeyboardEvent, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent } from "react";
+import DeleteQuestionOption from "./delete-question-option";
+import { useParams } from "next/navigation";
 
 type Option = {
   option: string;
   order: number;
 };
 interface EditQuestionOptionProps {
+  question: Question;
   setEditingQuestionOption: (editingQuestionOption: number | undefined) => void;
   setQuestionOptions: React.Dispatch<React.SetStateAction<QuestionOptionArray>>;
   editingQuestionOption: number;
@@ -22,7 +24,9 @@ const EditQuestionOption = ({
   setQuestionOptions,
   questionOptions,
   type,
+  question,
 }: EditQuestionOptionProps) => {
+  const { formId } = useParams();
   // add question option
   function incrementQuestionOption() {
     const prevLength = questionOptions.length;
@@ -80,41 +84,60 @@ const EditQuestionOption = ({
             if (type === QuestionType["DROPDOWN"]) {
               return (
                 <li
+                  className="cursor-pointer hover:underline"
                   key={option.order}
                   onClick={() => setEditingQuestionOption(index)}
                 >
-                  {`${index + 1}.`} {option.option}
+                  <p>
+                    {`${index + 1}.`} {option.option}
+                  </p>
                 </li>
               );
             } else if (type === QuestionType["CHECKBOXES"]) {
               return (
                 <li
                   key={option.order}
-                  className="flex items-center gap-2"
+                  className="flex items-center justify-between gap-2 cursor-pointer hover:underline "
                   onClick={() => setEditingQuestionOption(index)}
                 >
-                  <Square className="w-4 h-4 text-muted-foreground" />{" "}
-                  {option.option}
+                  <p className="flex items-center gap-2">
+                    <Square className="w-4 h-4 text-muted-foreground" />{" "}
+                    {option.option}
+                  </p>
+                  {questionOptions.length > 1 && (
+                    <DeleteQuestionOption
+                      formId={`${formId}`}
+                      questionOptions={questionOptions}
+                      questionOptionId={option.id!}
+                      question={question}
+                    />
+                  )}
                 </li>
               );
             } else if (type === QuestionType["MULTIPLE_CHOICE"]) {
               return (
                 <li
                   key={option.order}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 cursor-pointer hover:underline"
                   onClick={() => setEditingQuestionOption(index)}
                 >
-                  <Circle className="w-4 h-4 text-muted-foreground" />{" "}
-                  {option.option}
+                  <p>
+                    <Circle className="w-4 h-4 text-muted-foreground" />{" "}
+                    {option.option}
+                  </p>
                 </li>
               );
             }
           }
         })}
+        <li
+          role="button"
+          className=" text-muted-foreground flex items-center gap-2 "
+          onClick={() => incrementQuestionOption()}
+        >
+          <PlusCircle className="w-4 h-4" /> add option
+        </li>
       </ul>
-      <Button type="button" onClick={() => incrementQuestionOption()}>
-        <PlusCircle className="w-5 h-5" />
-      </Button>
     </>
   );
 };

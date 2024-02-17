@@ -8,6 +8,7 @@ export interface FormData {
 }
 
 export type QuestionOptionArray = Array<{
+  id?: string;
   option: string;
   order: number;
 }>;
