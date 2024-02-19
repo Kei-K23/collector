@@ -29,12 +29,17 @@ const EditQuestionOption = ({
   const { formId } = useParams();
   // add question option
   function incrementQuestionOption() {
-    const prevLength = questionOptions.length;
+    const lastOptions = questionOptions[questionOptions.length - 1];
+
+    console.log(questionOptions, lastOptions);
+
+    const newOrder = lastOptions.order + 1;
+
     setQuestionOptions([
       ...questionOptions,
       {
-        option: `Option ${prevLength + 1}`,
-        order: prevLength + 1,
+        option: `Option ${newOrder}`,
+        order: newOrder,
       },
     ]);
   }
@@ -84,13 +89,23 @@ const EditQuestionOption = ({
             if (type === QuestionType["DROPDOWN"]) {
               return (
                 <li
-                  className="cursor-pointer hover:underline"
+                  className="flex items-center justify-between gap-2 cursor-pointer hover:underline"
                   key={option.order}
                   onClick={() => setEditingQuestionOption(index)}
                 >
                   <p>
                     {`${index + 1}.`} {option.option}
                   </p>
+                  {questionOptions.length > 1 && (
+                    <DeleteQuestionOption
+                      formId={`${formId}`}
+                      setQuestionOptions={setQuestionOptions}
+                      questionOptions={questionOptions}
+                      questionOptionId={option.id!}
+                      order={option.order}
+                      question={question}
+                    />
+                  )}
                 </li>
               );
             } else if (type === QuestionType["CHECKBOXES"]) {
@@ -120,13 +135,23 @@ const EditQuestionOption = ({
               return (
                 <li
                   key={option.order}
-                  className="flex items-center gap-2 cursor-pointer hover:underline"
+                  className="flex items-center justify-between gap-2 cursor-pointer hover:underline"
                   onClick={() => setEditingQuestionOption(index)}
                 >
-                  <p>
+                  <p className="flex items-center gap-2">
                     <Circle className="w-4 h-4 text-muted-foreground" />{" "}
                     {option.option}
                   </p>
+                  {questionOptions.length > 1 && (
+                    <DeleteQuestionOption
+                      formId={`${formId}`}
+                      setQuestionOptions={setQuestionOptions}
+                      questionOptions={questionOptions}
+                      questionOptionId={option.id!}
+                      order={option.order}
+                      question={question}
+                    />
+                  )}
                 </li>
               );
             }
