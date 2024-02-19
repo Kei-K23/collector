@@ -12,7 +12,9 @@ interface DeleteQuestionOptionProps {
   question: Question;
   questionOptionId: string;
   formId: string;
+  order: number;
   questionOptions: QuestionOptionArray;
+  setQuestionOptions: React.Dispatch<React.SetStateAction<QuestionOptionArray>>;
 }
 
 const DeleteQuestionOption = ({
@@ -20,43 +22,55 @@ const DeleteQuestionOption = ({
   question,
   questionOptions,
   formId,
+  order,
+  setQuestionOptions,
 }: DeleteQuestionOptionProps) => {
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDeleteQuestionOption = async (question: Question) => {
-    if (!question.id || !formId || !questionOptionId) return;
+    if (!question.id || !formId) return;
 
     if (questionOptions.length < 1) return;
 
-    try {
-      setIsLoading(true);
+    if (questionOptionId) {
+      try {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://localhost:3300/api/questions/${question.id}/${formId}/${questionOptionId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
 
-      const res = await fetch(
-        `http://localhost:3300/api/questions/${question.id}/${formId}/${questionOptionId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Accept: "application/json",
-          },
+        const data = await res.json();
+
+        if (data.success && res.ok) {
+          // invalid question
+          queryClient.invalidateQueries({
+            queryKey: ["forms", user?.id, formId],
+          });
+
+          // invalid question option for client side state
+          setQuestionOptions((prev) =>
+            prev.filter((o) => o.id !== questionOptionId)
+          );
+        } else {
+          toast.error(data.message);
         }
-      );
-
-      const data = await res.json();
-
-      if (data.success && res.ok) {
-        queryClient.invalidateQueries({
-          queryKey: ["forms", user?.id, formId],
-        });
-      } else {
-        toast.error(data.message);
+      } catch (e: any) {
+        setIsLoading(true);
+        toast.error("Failed to delete question");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (e: any) {
-      setIsLoading(true);
-      toast.error("Failed to delete question");
-    } finally {
-      setIsLoading(false);
+    } else {
+      // invalid question option for client side state
+      setQuestionOptions((prev) => prev.filter((o) => o.order !== order));
     }
   };
 

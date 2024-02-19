@@ -107,8 +107,10 @@ const EditQuestionOption = ({
                   {questionOptions.length > 1 && (
                     <DeleteQuestionOption
                       formId={`${formId}`}
+                      setQuestionOptions={setQuestionOptions}
                       questionOptions={questionOptions}
                       questionOptionId={option.id!}
+                      order={option.order}
                       question={question}
                     />
                   )}
