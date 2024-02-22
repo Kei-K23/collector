@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DetailFormData, Question, QuestionType } from "@/type";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 import AnswerBorder from "./_components/answer-border";
 import { Button } from "@/components/ui/button";
 
@@ -27,6 +27,48 @@ interface AnswerIdPageProps {
 
 const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
   const { user } = useUser();
+
+  // State variable to hold form data as an array of objects
+  const [formDataArray, setFormDataArray] = useState<
+    Array<{
+      questionId: string;
+      text?: string;
+      answerOption?: Array<{
+        questionOptionId: string;
+      }>;
+    }>
+  >([]);
+
+  // Function to handle changes in form inputs
+  // Function to handle changes in form inputs
+  const handleInputChange = (
+    questionId: string,
+    text?: string,
+    answerOption?: Array<{
+      questionOptionId: string;
+    }>
+  ) => {
+    // Check if the question is already in the formDataArray
+    const existingIndex = formDataArray.findIndex(
+      (data) => data.questionId === questionId
+    );
+
+    if (existingIndex !== -1) {
+      // Update the answer if the question exists
+      setFormDataArray((prevFormDataArray) => {
+        const newDataArray = [...prevFormDataArray];
+        newDataArray[existingIndex].text = text;
+        newDataArray[existingIndex].answerOption = answerOption;
+        return newDataArray;
+      });
+    } else {
+      // Add the new question and its answer to the formDataArray
+      setFormDataArray((prevFormDataArray) => [
+        ...prevFormDataArray,
+        { questionId, text, answerOption },
+      ]);
+    }
+  };
 
   const { isPending, data } = useQuery<DetailFormData>({
     queryKey: ["forms", user?.id, params?.answerId],
@@ -50,7 +92,23 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
     );
   }
 
-  function buildAnswerForm(question: Question, type: QuestionType) {
+  function buildAnswerForm({
+    question,
+    type,
+    handleInputChange,
+  }: {
+    question: Question;
+    type: QuestionType;
+    handleInputChange: (
+      questionId: string,
+      text?: string | undefined,
+      answerOption?:
+        | {
+            questionOptionId: string;
+          }[]
+        | undefined
+    ) => void;
+  }) {
     switch (type) {
       case QuestionType.SHORT_ANSWER:
         return (
@@ -65,7 +123,10 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
                 </span>
               )}
             </div>
-            <Input placeholder={question.type?.toLowerCase()} />
+            <Input
+              placeholder={question.type?.toLowerCase()}
+              onChange={(e) => handleInputChange(question.id!, e.target.value)}
+            />
           </AnswerBorder>
         );
       case QuestionType.PARAGRAPH:
@@ -81,7 +142,10 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
                 </span>
               )}
             </div>
-            <Textarea placeholder={question.type?.toLowerCase()}></Textarea>
+            <Textarea
+              placeholder={question.type?.toLowerCase()}
+              onChange={(e) => handleInputChange(question.id!, e.target.value)}
+            ></Textarea>
           </AnswerBorder>
         );
       case QuestionType.DROPDOWN:
@@ -133,6 +197,45 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
                 className="flex items-center space-x-2"
               >
                 <Checkbox
+                  onCheckedChange={(isChecked) => {
+                    setFormDataArray((prevFormDataArray) => {
+                      const isExist = prevFormDataArray?.some(
+                        (prevFormData) =>
+                          prevFormData.questionId === question.id
+                      );
+
+                      if (isExist) {
+                        return prevFormDataArray.map((prevFormData) => {
+                          if (prevFormData.questionId === question.id) {
+                            return {
+                              ...prevFormData,
+                              answerOption: isChecked
+                                ? [
+                                    ...prevFormData.answerOption!,
+                                    { questionOptionId: questionOption.id },
+                                  ]
+                                : prevFormData.answerOption?.filter(
+                                    (prevAnswerOption) =>
+                                      prevAnswerOption.questionOptionId !==
+                                      questionOption.id
+                                  ),
+                            };
+                          }
+                          return prevFormData;
+                        });
+                      } else {
+                        return [
+                          ...prevFormDataArray,
+                          {
+                            questionId: question.id!,
+                            answerOption: isChecked
+                              ? [{ questionOptionId: questionOption.id }]
+                              : [],
+                          },
+                        ];
+                      }
+                    });
+                  }}
                   id={`${questionOption.id}`}
                   className="cursor-pointer"
                 />
@@ -180,6 +283,8 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
     }
   }
 
+  console.log(formDataArray);
+
   return (
     <div className="pt-20 pb-16 mx-auto px-4 md:w-[700px] lg:w-[800px] xl:w-[750px] mt-10 mb-16 space-y-4">
       <div className="rounded-lg shadow-lg border  px-8 py-4 space-y-4 border-background">
@@ -189,7 +294,9 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
         </p>
       </div>
       <form className="space-y-3">
-        {data.data?.question?.map((q) => buildAnswerForm(q, q.type!))}
+        {data.data?.question?.map((q) =>
+          buildAnswerForm({ question: q, type: q.type!, handleInputChange })
+        )}
         <Button>Submit</Button>
       </form>
     </div>
