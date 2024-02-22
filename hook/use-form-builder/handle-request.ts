@@ -2,6 +2,7 @@ import { FormEvent } from "react";
 import { toast } from "sonner";
 import { QueryClient } from "@tanstack/react-query";
 import { Question, QuestionArray } from "@/type";
+import next from "next";
 
 interface HandleQuestionRequestProps {
   e: FormEvent;

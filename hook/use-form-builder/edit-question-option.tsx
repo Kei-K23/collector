@@ -31,8 +31,6 @@ const EditQuestionOption = ({
   function incrementQuestionOption() {
     const lastOptions = questionOptions[questionOptions.length - 1];
 
-    console.log(questionOptions, lastOptions);
-
     const newOrder = lastOptions.order + 1;
 
     setQuestionOptions([

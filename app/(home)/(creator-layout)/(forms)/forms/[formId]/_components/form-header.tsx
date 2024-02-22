@@ -9,6 +9,7 @@ import React from "react";
 
 const FormHeader = ({ description, title, id }: DetailFormData["data"]) => {
   const { onOpen } = useModalStore();
+
   return (
     <div className="rounded-lg shadow-lg border  px-8 py-4 space-y-4 border-background flex items-start justify-between">
       <div>
