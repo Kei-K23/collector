@@ -15,9 +15,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { DetailFormData, Question, QuestionType } from "@/type";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import AnswerBorder from "./_components/answer-border";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface AnswerIdPageProps {
   params: {
@@ -346,7 +347,30 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
     }
   }
 
-  console.log(formDataArray);
+  async function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:3300/api/responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          formId: params.answerId,
+          userId: user?.id,
+          answer: formDataArray,
+        }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.status === true) {
+        toast.success(data.message);
+      }
+    } catch (e: any) {
+      toast.error("Something went wrong");
+    }
+  }
 
   return (
     <div className="pt-20 pb-16 mx-auto px-4 md:w-[700px] lg:w-[800px] xl:w-[750px] mt-10 mb-16 space-y-4">
@@ -356,7 +380,7 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
           {data.data?.description ? data.data?.description : "no description"}
         </p>
       </div>
-      <form className="space-y-3">
+      <form onSubmit={handleOnSubmit} className="space-y-3">
         {data.data?.question?.map((q) =>
           buildAnswerForm({ question: q, type: q.type!, handleInputChange })
         )}
