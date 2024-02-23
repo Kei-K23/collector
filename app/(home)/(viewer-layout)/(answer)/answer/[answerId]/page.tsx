@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DetailFormData, Question, QuestionType } from "@/type";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AnswerBorder from "./_components/answer-border";
 import { Button } from "@/components/ui/button";
 
@@ -70,13 +70,39 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
     }
   };
 
-  const { isPending, data } = useQuery<DetailFormData>({
+  const { isPending, data, isSuccess } = useQuery<DetailFormData>({
     queryKey: ["forms", user?.id, params?.answerId],
     queryFn: () =>
       fetch(
         `http://localhost:3300/api/forms/${user?.id}/${params?.answerId}`
       ).then((res) => res.json()),
   });
+
+  useEffect(() => {
+    if (isPending) return;
+
+    if (isSuccess) {
+      data.data?.question?.map((q) => {
+        if (
+          q.questionOption &&
+          (q.type === QuestionType.DROPDOWN ||
+            q.type === QuestionType.MULTIPLE_CHOICE)
+        ) {
+          setFormDataArray((prevFormDataArray) => [
+            ...prevFormDataArray,
+            {
+              questionId: q.id!,
+              answerOption: [
+                {
+                  questionOptionId: q.questionOption[0].id!,
+                },
+              ],
+            },
+          ]);
+        }
+      });
+    }
+  }, [isSuccess]);
 
   // TODO:: Loading
   if (isPending) {
@@ -161,7 +187,13 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
                 </span>
               )}
             </div>
-            <Select>
+            <Select
+              onValueChange={(selectedValue) =>
+                handleInputChange(question.id!, undefined, [
+                  { questionOptionId: selectedValue },
+                ])
+              }
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Multiple choice" />
               </SelectTrigger>
@@ -263,7 +295,36 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
               )}
             </div>
             {question.questionOption && question.questionOption.length > 0 && (
-              <RadioGroup defaultValue={`${question.questionOption[0].id}`}>
+              <RadioGroup
+                onValueChange={(e: string) => {
+                  setFormDataArray((prevFormDataArray) => {
+                    const isExist = prevFormDataArray?.some(
+                      (prevFormData) => prevFormData.questionId === question.id
+                    );
+
+                    if (isExist) {
+                      return prevFormDataArray.map((prevFormData) => {
+                        if (prevFormData.questionId === question.id) {
+                          return {
+                            ...prevFormData,
+                            answerOption: [{ questionOptionId: e }],
+                          };
+                        }
+                        return prevFormData;
+                      });
+                    } else {
+                      return [
+                        ...prevFormDataArray,
+                        {
+                          questionId: question.id!,
+                          answerOption: [{ questionOptionId: e }],
+                        },
+                      ];
+                    }
+                  });
+                }}
+                defaultValue={`${question.questionOption[0].id}`}
+              >
                 {question.questionOption?.map((questionOption) => (
                   <div
                     key={questionOption.id}
@@ -273,7 +334,9 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
                       value={`${questionOption.id}`}
                       id={`${questionOption.id}`}
                     />
-                    <Label htmlFor="option-one">{questionOption.option}</Label>
+                    <Label htmlFor={`${questionOption.id}`}>
+                      {questionOption.option}
+                    </Label>
                   </div>
                 ))}
               </RadioGroup>
