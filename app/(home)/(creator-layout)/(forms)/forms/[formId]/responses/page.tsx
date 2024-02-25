@@ -81,10 +81,13 @@ const FormIdResponsePage = ({ params }: FormIdResponsePageProps) => {
                 {q.questionOption.map((qo) => (
                   <li key={qo.id} className="flex items-center gap-x-2">
                     <p>{qo.option}</p>
-                    <span>
-                      ({qo.answerOption.length}{" "}
-                      {qo.answerOption.length > 1 ? "responses" : "response"})
-                    </span>
+                    {qo.answerOption && (
+                      <span>
+                        ({qo.answerOption.length}{" "}
+                        {qo?.answerOption.length > 1 ? "responses" : "response"}
+                        )
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

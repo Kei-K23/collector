@@ -19,7 +19,7 @@ export type QuestionOptionArray = Array<{
   id?: string;
   option: string;
   order: number;
-  answerOption: AnswerOptionArray;
+  answerOption?: AnswerOptionArray;
 }>;
 
 export type Question = {
