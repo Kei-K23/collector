@@ -79,6 +79,8 @@ export const handleQuestionRequest = async ({
       toast.error("Something went wrong!");
     }
   } catch (error) {
+    console.log(error);
+
     toast.error("An error occurred while saving the question.");
   }
 };
