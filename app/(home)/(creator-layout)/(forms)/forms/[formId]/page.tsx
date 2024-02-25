@@ -4,9 +4,12 @@ import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import FormHeader from "./_components/form-header";
-import { PlusCircle } from "lucide-react";
+import { MessageSquareMoreIcon, PlusCircle } from "lucide-react";
 import { defaultQuestionFormat } from "@/hook/use-form-builder/default-form";
 import useFormBuilder from "@/hook/use-form-builder";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 interface FormIdPageProps {
   params: {
@@ -21,13 +24,14 @@ const FormIdPage = ({ params }: FormIdPageProps) => {
     queryKey: ["forms", user?.id, params?.formId],
     queryFn: () =>
       fetch(
-        `http://localhost:3300/api/forms/${user?.id}/${params?.formId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/forms/detail/${params?.formId}`
       ).then((res) => res.json()),
   });
 
   const [questions, setQuestions] = useState<QuestionArray>(
     data?.data?.question ?? []
   );
+
   useEffect(() => {
     setQuestions(data?.data?.question ?? []);
   }, [data?.data?.question]);
@@ -66,6 +70,18 @@ const FormIdPage = ({ params }: FormIdPageProps) => {
 
   return (
     <div className="pt-20 pb-16 mx-auto px-4 md:w-[700px] lg:w-[800px] xl:w-[750px] mt-10 mb-16 space-y-4">
+      <Link
+        className={cn(
+          buttonVariants({
+            variant: "default",
+            className: "flex items-center gap-2",
+          })
+        )}
+        href={`/forms/${params.formId}/responses`}
+      >
+        <MessageSquareMoreIcon /> Go to responses
+      </Link>
+
       <FormHeader
         id={data.data?.id}
         title={data.data?.title}

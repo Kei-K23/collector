@@ -11,9 +11,9 @@ const RecentFormSection = () => {
   const { isPending, data } = useQuery({
     queryKey: ["forms", user?.id],
     queryFn: () =>
-      fetch(`http://localhost:3300/api/forms/${user?.id}`).then((res) =>
-        res.json()
-      ),
+      fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/forms/${user?.id}`
+      ).then((res) => res.json()),
   });
 
   // TODO:: Add loading indicator

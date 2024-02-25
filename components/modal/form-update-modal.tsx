@@ -57,7 +57,7 @@ export function UpdateFormModal() {
     }
 
     const res = await fetch(
-      `http://localhost:3300/api/forms/${user.id}/${formId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/forms/${user.id}/${formId}`,
       {
         method: "PUT",
         headers: {

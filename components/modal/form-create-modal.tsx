@@ -51,18 +51,21 @@ export function CreateFormModal() {
       return;
     }
 
-    const res = await fetch("http://localhost:3300/api/forms", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        title: values.title,
-        description: values.description,
-        externalUserId: user.id,
-      }),
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/forms`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          title: values.title,
+          description: values.description,
+          externalUserId: user.id,
+        }),
+      }
+    );
 
     const data = await res.json();
 

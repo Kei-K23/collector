@@ -7,10 +7,19 @@ export interface FormData {
   userId: string;
 }
 
+export type AnswerOptionArray = Array<{
+  answerId: string;
+  createdAt: string;
+  questionOptionId: string;
+  id: string;
+  updatedAt: string;
+}>;
+
 export type QuestionOptionArray = Array<{
   id?: string;
   option: string;
   order: number;
+  answerOption: AnswerOptionArray;
 }>;
 
 export type Question = {
@@ -25,6 +34,18 @@ export type Question = {
   updatedAt?: Date | undefined;
 };
 
+export type AnswerArray = Array<{
+  questionId: string;
+  responseId: string;
+  id: string;
+  text?: string;
+  answerOption?: Array<{
+    questionOptionId: string;
+  }>;
+  createdAt: Date;
+  updatedAt: Date;
+}>;
+
 export type QuestionArray = Array<
   Partial<{
     createdAt: Date;
@@ -36,6 +57,7 @@ export type QuestionArray = Array<
     text: string;
     type: QuestionType;
     updatedAt: Date;
+    answer: AnswerArray;
   }>
 >;
 
@@ -44,6 +66,7 @@ export interface DetailFormData {
     id: string;
     title: string;
     description?: string;
+    userId?: string;
     question?: QuestionArray;
   };
 }

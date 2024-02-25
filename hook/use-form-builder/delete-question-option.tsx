@@ -38,7 +38,7 @@ const DeleteQuestionOption = ({
       try {
         setIsLoading(true);
         const res = await fetch(
-          `http://localhost:3300/api/questions/${question.id}/${formId}/${questionOptionId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/questions/${question.id}/${formId}/${questionOptionId}`,
           {
             method: "DELETE",
             headers: {

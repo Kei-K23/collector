@@ -14,7 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { DetailFormData, Question, QuestionType } from "@/type";
 import { useUser } from "@clerk/nextjs";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { FormEvent, useEffect, useState } from "react";
 import AnswerBorder from "./_components/answer-border";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,7 @@ interface AnswerIdPageProps {
 
 const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
   const { user } = useUser();
+  const queryClient = useQueryClient();
 
   // State variable to hold form data as an array of objects
   const [formDataArray, setFormDataArray] = useState<
@@ -35,12 +36,11 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
       questionId: string;
       text?: string;
       answerOption?: Array<{
-        questionOptionId: string;
+        questionOptionId?: string;
       }>;
     }>
   >([]);
 
-  // Function to handle changes in form inputs
   // Function to handle changes in form inputs
   const handleInputChange = (
     questionId: string,
@@ -72,10 +72,10 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
   };
 
   const { isPending, data, isSuccess } = useQuery<DetailFormData>({
-    queryKey: ["forms", user?.id, params?.answerId],
+    queryKey: ["forms", params?.answerId],
     queryFn: () =>
       fetch(
-        `http://localhost:3300/api/forms/${user?.id}/${params?.answerId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/forms/detail/${params?.answerId}`
       ).then((res) => res.json()),
   });
 
@@ -95,7 +95,7 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
               questionId: q.id!,
               answerOption: [
                 {
-                  questionOptionId: q.questionOption[0].id!,
+                  questionOptionId: q.questionOption && q.questionOption[0].id!,
                 },
               ],
             },
@@ -350,22 +350,28 @@ const AnswerIdPage = ({ params }: AnswerIdPageProps) => {
   async function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3300/api/responses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          formId: params.answerId,
-          userId: user?.id,
-          answer: formDataArray,
-        }),
-      });
-      const data = await res.json();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/responses`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            formId: params.answerId,
+            userId: user?.id,
+            answer: formDataArray,
+          }),
+        }
+      );
+      const resData = await res.json();
 
-      if (res.ok && data.status === true) {
-        toast.success(data.message);
+      if (res.ok) {
+        queryClient.invalidateQueries({
+          queryKey: ["forms", "responses", params?.answerId],
+        });
+        toast.success(resData.message);
       }
     } catch (e: any) {
       toast.error("Something went wrong");

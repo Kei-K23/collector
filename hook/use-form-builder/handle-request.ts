@@ -27,8 +27,8 @@ export const handleQuestionRequest = async ({
   if (!userId || !editingQuestion) return;
 
   const endpoint = editingQuestion.id
-    ? `http://localhost:3300/api/questions/${editingQuestion.id}/${formId}`
-    : "http://localhost:3300/api/questions";
+    ? `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/questions/${editingQuestion.id}/${formId}`
+    : `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/questions`;
 
   const method = editingQuestion.id ? "PUT" : "POST";
   const successMessage = editingQuestion.id

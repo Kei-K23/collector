@@ -15,7 +15,7 @@ const Navbar = () => {
             Collector
           </span>
         </Link>
-        <Search />
+
         <div className="flex items-center gap-2">
           <ModeToggle />
           <UserButton />

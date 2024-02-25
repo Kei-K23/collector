@@ -25,7 +25,7 @@ const DeleteQuestion = ({ formId, question }: DeleteQuestionProps) => {
       setIsLoading(true);
 
       const res = await fetch(
-        `http://localhost:3300/api/questions/${question.id}/${formId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/questions/${question.id}/${formId}`,
         {
           method: "DELETE",
           headers: {

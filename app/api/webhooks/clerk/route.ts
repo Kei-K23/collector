@@ -52,25 +52,28 @@ export async function POST(req: Request) {
 
   if (eventType === "user.created") {
     try {
-      const res = await fetch(`http://localhost:3300/api/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          username: payload.data.username,
-          name: payload.data.last_name
-            ? `${payload.data.first_name} ${payload.data.last_name}`
-            : payload.data.first_name,
-          email: payload.data.email_addresses[0].email_address,
-          imageUrl: payload.data.image_url,
-          externalUserId: payload.data.id,
-        }),
-        next: {
-          revalidate: 0,
-        },
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/users`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            username: payload.data.username,
+            name: payload.data.last_name
+              ? `${payload.data.first_name} ${payload.data.last_name}`
+              : payload.data.first_name,
+            email: payload.data.email_addresses[0].email_address,
+            imageUrl: payload.data.image_url,
+            externalUserId: payload.data.id,
+          }),
+          next: {
+            revalidate: 0,
+          },
+        }
+      );
     } catch (e: any) {
       return new Response("Something went wrong when creating user.", {
         status: 500,
@@ -80,24 +83,27 @@ export async function POST(req: Request) {
 
   if (eventType === "user.updated") {
     try {
-      await fetch(`http://localhost:3300/api/users/${payload.data.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          username: payload.data.username,
-          name: payload.data.last_name
-            ? `${payload.data.first_name} ${payload.data.last_name}`
-            : payload.data.first_name,
-          email: payload.data.email_addresses[0].email_address,
-          imageUrl: payload.data.image_url,
-        }),
-        next: {
-          revalidate: 0,
-        },
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/users/${payload.data.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            username: payload.data.username,
+            name: payload.data.last_name
+              ? `${payload.data.first_name} ${payload.data.last_name}`
+              : payload.data.first_name,
+            email: payload.data.email_addresses[0].email_address,
+            imageUrl: payload.data.image_url,
+          }),
+          next: {
+            revalidate: 0,
+          },
+        }
+      );
     } catch (e: any) {
       return new Response("Something went wrong when updating user.", {
         status: 500,
@@ -107,15 +113,18 @@ export async function POST(req: Request) {
 
   if (eventType === "user.deleted") {
     try {
-      await fetch(`http://localhost:3300/api/users/${payload.data.id}`, {
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-        },
-        next: {
-          revalidate: 0,
-        },
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}/api/users/${payload.data.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+          },
+          next: {
+            revalidate: 0,
+          },
+        }
+      );
     } catch (e: any) {
       return new Response("Something went wrong when deleting user.", {
         status: 500,
